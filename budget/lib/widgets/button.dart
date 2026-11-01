@@ -243,11 +243,17 @@ class TappableOpacityButton extends StatelessWidget {
           text: label,
           fontSize: fontSize,
           textColor: textColor ??
-              (appStateSettings["materialYou"]
-                  ? dynamicPastel(
-                      context, Theme.of(context).colorScheme.onPrimary,
-                      amount: 0.3)
-                  : Theme.of(context).colorScheme.onSecondaryContainer),
+              (Theme.of(context).brightness == Brightness.dark
+                  ? (color ?? Theme.of(context).colorScheme.background)
+                              .computeLuminance() >
+                          0.179
+                      ? const Color(0xFF080808)
+                      : Colors.white
+                  : appStateSettings["materialYou"]
+                      ? dynamicPastel(
+                          context, Theme.of(context).colorScheme.onPrimary,
+                          amount: 0.3)
+                      : Theme.of(context).colorScheme.onSecondaryContainer),
           maxLines: 5,
           textAlign: TextAlign.center,
         ),
