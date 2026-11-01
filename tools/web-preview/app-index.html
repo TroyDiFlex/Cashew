@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <base href="/app/">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#080808">
+  <title>Cashew - демонстрационные данные</title>
+  <link rel="icon" href="favicon.ico">
+  <script src="sql-wasm.js"></script>
+  <script src="flutter.js" defer></script>
+  <style>body{margin:0;background:#080808;color:#eee;font:14px Arial,sans-serif}#loading{position:fixed;inset:0;display:grid;place-items:center}#loading div{width:32px;height:32px;border:3px solid #333;border-top-color:#fb7185;border-radius:50%;animation:spin .8s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}</style>
+</head>
+<body>
+  <div id="loading" aria-label="Загрузка Cashew"><div></div></div>
+  <script>
+    const report=message=>fetch('/__preview_error',{method:'POST',headers:{'Content-Type':'text/plain'},body:String(message).slice(0,4000)}).catch(()=>{});
+    window.addEventListener('error',event=>report(event.message));
+    window.addEventListener('unhandledrejection',event=>report(event.reason));
+    window.addEventListener('load',()=>{
+      _flutter.loader.loadEntrypoint({}).then(engine=>engine.initializeEngine({renderer:'html',useColorEmoji:false})).then(runner=>runner.runApp()).then(()=>document.getElementById('loading')?.remove()).catch(error=>{
+        report(error);
+        document.getElementById('loading').textContent='Ошибка запуска Cashew: '+error;
+      });
+    });
+  </script>
+</body>
+</html>

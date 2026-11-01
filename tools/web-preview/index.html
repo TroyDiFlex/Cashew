@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Cashew - локальный предпросмотр</title>
+  <style>
+    :root {color-scheme:dark;font-family:Arial,sans-serif;background:#101010;color:#eee}
+    * {box-sizing:border-box}
+    body {margin:0;padding:18px;display:flex;flex-direction:column;align-items:center;gap:12px}
+    header {width:min(100%,940px);display:flex;gap:16px;align-items:center;justify-content:space-between;flex-wrap:wrap;font-size:13px}
+    header p {margin:4px 0 0;color:#aaa;font-size:12px}
+    .controls {display:flex;gap:8px;align-items:center}
+    select,button {font:inherit;padding:9px 12px;border:1px solid #3a3a3a;border-radius:7px;background:#202020;color:#eee;min-height:38px}
+    button {cursor:pointer}
+    button:focus-visible,select:focus-visible {outline:2px solid #fb7185;outline-offset:3px}
+    .device {width:min(100%,412px);height:calc(100dvh - 100px);min-height:560px;max-height:960px;background:#080808;border:1px solid #343434;border-radius:16px;overflow:hidden}
+    iframe {display:block;width:100%;height:100%;border:0;background:#080808}
+    @media(max-width:520px) {body{padding:10px}header{gap:10px}.device{height:calc(100dvh - 142px);border-radius:10px}.controls{width:100%}}
+  </style>
+</head>
+<body>
+  <header>
+    <div><strong>Cashew · предпросмотр темы</strong><p>Штатное приложение. Вымышленные данные сбрасываются при обновлении.</p></div>
+    <div class="controls">
+      <label>Ширина <select id="width" aria-label="Ширина экрана"><option value="360">360 px</option><option value="412" selected>412 px</option><option value="full">Окно целиком</option></select></label>
+      <button id="reset" type="button">Сбросить пример</button>
+    </div>
+  </header>
+  <main class="device" id="device">
+    <iframe id="app" src="/app/" title="Сам Cashew с демонстрационными данными"></iframe>
+  </main>
+  <script>
+    const device=document.getElementById('device');
+    document.getElementById('width').addEventListener('change',event=>{
+      device.style.width=event.target.value==='full'?'min(100%,1200px)':`min(100%,${event.target.value}px)`;
+    });
+    document.getElementById('reset').addEventListener('click',()=>document.getElementById('app').contentWindow.location.reload());
+  </script>
+</body>
+</html>
