@@ -1,3 +1,4 @@
+import 'package:budget/visuals.dart';
 import 'package:budget/motion.dart';
 import 'package:budget/database/tables.dart';
 import 'package:budget/functions.dart';
@@ -170,9 +171,11 @@ class _LineChartState extends State<_LineChart> with WidgetsBindingObserver {
                     textAlign: TextAlign.center,
                     fontSize: 13,
                     text: text,
-                    textColor: dynamicPastel(context, widget.color,
-                            amount: 0.8, inverse: true)
-                        .withOpacity(0.5),
+                    textColor: Theme.of(context).brightness == Brightness.dark
+                        ? CharcoalPalette.muted
+                        : dynamicPastel(context, widget.color,
+                                amount: 0.8, inverse: true)
+                            .withOpacity(0.5),
                   ),
                 ),
               );
@@ -219,9 +222,11 @@ class _LineChartState extends State<_LineChart> with WidgetsBindingObserver {
                     textAlign: TextAlign.end,
                     text: getWordedNumber(context,
                         Provider.of<AllWallets>(context, listen: false), value),
-                    textColor: dynamicPastel(context, widget.color,
-                            amount: 0.5, inverse: true)
-                        .withOpacity(0.3),
+                    textColor: Theme.of(context).brightness == Brightness.dark
+                        ? CharcoalPalette.muted
+                        : dynamicPastel(context, widget.color,
+                                amount: 0.5, inverse: true)
+                            .withOpacity(0.3),
                     fontSize: 13,
                   ),
                 ),
@@ -286,7 +291,7 @@ class _LineChartState extends State<_LineChart> with WidgetsBindingObserver {
             (LineChartBarData barData, List<int> spotIndexes) {
           // only show touch data for primary colored lines
           bool transparent = false;
-          if (barData.color != lightenPastel(widget.color, amount: 0.3)) {
+          if (barData.color != widget.color) {
             transparent = true;
           }
           return spotIndexes.map((index) {
@@ -335,7 +340,10 @@ class _LineChartState extends State<_LineChart> with WidgetsBindingObserver {
           touchedValue = value.toInt();
         },
         touchTooltipData: LineTouchTooltipData(
-          getTooltipColor: (_) => widget.color.withOpacity(0.7),
+          getTooltipColor: (_) =>
+              Theme.of(context).brightness == Brightness.dark
+                  ? CharcoalPalette.raised
+                  : widget.color.withOpacity(0.7),
           tooltipRoundedRadius: 8,
           fitInsideVertically: true,
           fitInsideHorizontally: true,
@@ -343,8 +351,7 @@ class _LineChartState extends State<_LineChart> with WidgetsBindingObserver {
           getTooltipItems: (List<LineBarSpot> lineBarsSpot) {
             return lineBarsSpot.map((LineBarSpot lineBarSpot) {
               // only show touch data for primary colored lines
-              if (lineBarSpot.bar.color !=
-                  lightenPastel(widget.color, amount: 0.3)) {
+              if (lineBarSpot.bar.color != widget.color) {
                 return null;
               }
               DateTime currentDate =
@@ -381,6 +388,7 @@ class _LineChartState extends State<_LineChart> with WidgetsBindingObserver {
 
   FlGridData get gridData => FlGridData(
         show: true,
+        drawVerticalLine: false,
         // If the interval is equal to a really small number (almost 0, it freezes the app!)
         verticalInterval: double.parse(
                     (((widget.maxPair.x).abs() + (widget.minPair.x).abs()) /
@@ -404,8 +412,8 @@ class _LineChartState extends State<_LineChart> with WidgetsBindingObserver {
             color: dynamicPastel(context, widget.color, amount: 0.3)
                 .withOpacity(0.2),
             // color: Colors.transparent,
-            strokeWidth: 2,
-            dashArray: [2, 8],
+            strokeWidth: 1,
+            dashArray: [3, 6],
           );
         },
         // If the interval is equal to a really small number (almost 0, it freezes the app!)
@@ -420,8 +428,8 @@ class _LineChartState extends State<_LineChart> with WidgetsBindingObserver {
           return FlLine(
             color: dynamicPastel(context, widget.color, amount: 0.3)
                 .withOpacity(0.2),
-            strokeWidth: 2,
-            dashArray: [2, 8],
+            strokeWidth: 1,
+            dashArray: [3, 6],
           );
         },
       );
@@ -432,10 +440,16 @@ class _LineChartState extends State<_LineChart> with WidgetsBindingObserver {
 
   LineChartBarData lineChartBarData(List<FlSpot> spots, int index) {
     return LineChartBarData(
-      color: widget.colors.length > 0
-          ? lightenPastel(widget.colors[index], amount: 0.3)
-          : lightenPastel(widget.color, amount: 0.3),
-      barWidth: 3,
+      color: widget.colors.length > 0 ? widget.colors[index] : widget.color,
+      barWidth: 2.5,
+      shadow: Shadow(
+        color: appStateSettings["disableShadows"] == true ||
+                appStateSettings["batterySaver"] == true ||
+                index != 0
+            ? Colors.transparent
+            : widget.color.withOpacity(0.18),
+        blurRadius: 5,
+      ),
       isStrokeCapRound: true,
       dotData: FlDotData(show: false),
       isCurved: widget.isCurved,
@@ -453,9 +467,7 @@ class _LineChartState extends State<_LineChart> with WidgetsBindingObserver {
                 : true,
         gradient: LinearGradient(
           colors: [
-            index == 0
-                ? widget.color.withAlpha(100)
-                : widget.color.withAlpha(1),
+            index == 0 ? widget.color.withAlpha(48) : widget.color.withAlpha(1),
             widget.color.withAlpha(1),
           ],
           begin: Alignment.bottomCenter,
@@ -477,9 +489,7 @@ class _LineChartState extends State<_LineChart> with WidgetsBindingObserver {
         show: widget.minPair.y <= 0 && widget.maxPair.y <= 0 ? false : true,
         gradient: LinearGradient(
           colors: [
-            index == 0
-                ? widget.color.withAlpha(100)
-                : widget.color.withAlpha(1),
+            index == 0 ? widget.color.withAlpha(48) : widget.color.withAlpha(1),
             widget.color.withAlpha(1),
           ],
           begin: Alignment.topCenter,

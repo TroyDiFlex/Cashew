@@ -1,3 +1,4 @@
+import 'package:budget/visuals.dart';
 import 'package:budget/motion.dart';
 import 'dart:async';
 import 'package:budget/functions.dart';
@@ -21,7 +22,7 @@ class Button extends StatefulWidget {
     this.color,
     this.textColor,
     this.padding =
-        const EdgeInsetsDirectional.symmetric(horizontal: 20, vertical: 15),
+        const EdgeInsetsDirectional.symmetric(horizontal: 18, vertical: 13),
     this.hasBottomExtraSafeArea = false,
     this.expandToFillBottomExtraSafeArea = false,
     this.icon,
@@ -81,18 +82,32 @@ class _ButtonState extends State<Button> {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final dark = scheme.brightness == Brightness.dark;
     final canAnimate =
         appStateSettings["appAnimations"] == AppAnimations.all.index &&
             appStateSettings["batterySaver"] != true &&
             !(MediaQuery.maybeOf(context)?.disableAnimations ?? false);
+    final background = widget.disabled
+        ? getColor(context, "lightDarkAccentHeavy")
+        : widget.color ??
+            (dark
+                ? scheme.primary
+                : appStateSettings["materialYou"]
+                    ? dynamicPastel(context, scheme.primary, amount: 0.15)
+                    : scheme.secondaryContainer);
+    final foreground = widget.textColor ??
+        (dark
+            ? background.computeLuminance() > 0.179
+                ? CharcoalPalette.background
+                : CharcoalPalette.text
+            : appStateSettings["materialYou"]
+                ? dynamicPastel(context, scheme.onPrimary, amount: 0.2)
+                : scheme.onSecondaryContainer);
     Widget text = TextFont(
       text: widget.label,
       fontSize: widget.fontSize,
-      textColor: widget.textColor ??
-          (appStateSettings["materialYou"]
-              ? dynamicPastel(context, Theme.of(context).colorScheme.onPrimary,
-                  amount: 0.2)
-              : Theme.of(context).colorScheme.onSecondaryContainer),
+      textColor: foreground,
       maxLines: 5,
       textAlign: widget.icon != null ? TextAlign.start : TextAlign.center,
     );
@@ -111,17 +126,7 @@ class _ButtonState extends State<Button> {
             ? Alignment.bottomCenter
             : Alignment.center,
         child: Tappable(
-          color: widget.disabled
-              ? appStateSettings["materialYou"]
-                  ? Colors.grey
-                  : getColor(context, "lightDarkAccentHeavy")
-              : widget.color != null
-                  ? widget.color
-                  : appStateSettings["materialYou"]
-                      ? dynamicPastel(
-                          context, Theme.of(context).colorScheme.primary,
-                          amount: 0.15)
-                      : Theme.of(context).colorScheme.secondaryContainer,
+          color: background,
           onHighlightChanged: (value) {
             if (canAnimate)
               setState(() {
@@ -135,10 +140,7 @@ class _ButtonState extends State<Button> {
               widget.onDisabled!();
           },
           onLongPress: widget.onLongPress,
-          borderRadius:
-              getPlatform() == PlatformOS.isIOS && widget.borderRadius == null
-                  ? 10
-                  : widget.borderRadius ?? 20,
+          borderRadius: widget.borderRadius ?? CharcoalPalette.controlRadius,
           child: Padding(
             padding: EdgeInsetsDirectional.only(
               bottom: widget.expandToFillBottomExtraSafeArea
@@ -147,6 +149,7 @@ class _ButtonState extends State<Button> {
             ),
             child: Container(
               width: widget.width,
+              constraints: const BoxConstraints(minHeight: 48),
               // height: widget.height,
               padding: widget.padding,
               child: Center(
@@ -160,11 +163,7 @@ class _ButtonState extends State<Button> {
                         child: Icon(
                           widget.icon,
                           size: 21,
-                          color: widget.iconColor == null
-                              ? Theme.of(context)
-                                  .colorScheme
-                                  .onSecondaryContainer
-                              : widget.iconColor,
+                          color: widget.iconColor ?? foreground,
                         ),
                       ),
                     widget.flexibleLayout
@@ -289,7 +288,7 @@ class ButtonIcon extends StatelessWidget {
       color: color == null
           ? Theme.of(context).colorScheme.secondaryContainer
           : color,
-      borderRadius: getPlatform() == PlatformOS.isIOS ? 10 : 15,
+      borderRadius: CharcoalPalette.controlRadius,
       onTap: onTap,
     );
   }

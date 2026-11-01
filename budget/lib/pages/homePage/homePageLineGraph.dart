@@ -1,3 +1,4 @@
+import 'package:budget/visuals.dart';
 import 'package:budget/colors.dart';
 import 'package:budget/database/tables.dart';
 import 'package:budget/functions.dart';
@@ -49,11 +50,9 @@ class HomePageLineGraph extends StatelessWidget {
         padding: const EdgeInsetsDirectional.only(bottom: 13),
         child: Container(
           margin: EdgeInsetsDirectional.symmetric(horizontal: 13),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadiusDirectional.all(Radius.circular(15)),
-            color: getColor(context, "lightDarkAccentHeavyLight"),
-            boxShadow: boxShadowCheck(boxShadowGeneral(context)),
-          ),
+          decoration: CharcoalPalette.panelDecoration(context,
+              glow: appStateSettings["disableShadows"] != true &&
+                  appStateSettings["batterySaver"] != true),
           child: appStateSettings["lineGraphDisplayType"] ==
                   LineGraphDisplay.Default30Days.index
               ? PastSpendingGraph(
