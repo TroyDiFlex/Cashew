@@ -37,7 +37,7 @@ class AddFAB extends StatelessWidget {
       openPage: openPage,
       onTap: onTap,
       fabSize: getIsFullScreen(context) == false ? 60 : 70,
-      borderRadius: getIsFullScreen(context) == false ? 18 : 22,
+      borderRadius: getIsFullScreen(context) == false ? 16 : 20,
       onLongPress: () {
         openBottomSheet(
           context,

@@ -81,6 +81,11 @@ class _ButtonState extends State<Button> {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final dark = scheme.brightness == Brightness.dark;
+    final onButton = (widget.color ?? scheme.primary).computeLuminance() > 0.179
+        ? const Color(0xFF080808)
+        : Colors.white;
     final canAnimate =
         appStateSettings["appAnimations"] == AppAnimations.all.index &&
             appStateSettings["batterySaver"] != true &&
@@ -89,10 +94,13 @@ class _ButtonState extends State<Button> {
       text: widget.label,
       fontSize: widget.fontSize,
       textColor: widget.textColor ??
-          (appStateSettings["materialYou"]
-              ? dynamicPastel(context, Theme.of(context).colorScheme.onPrimary,
-                  amount: 0.2)
-              : Theme.of(context).colorScheme.onSecondaryContainer),
+          (dark
+              ? onButton
+              : appStateSettings["materialYou"]
+                  ? dynamicPastel(
+                      context, Theme.of(context).colorScheme.onPrimary,
+                      amount: 0.2)
+                  : Theme.of(context).colorScheme.onSecondaryContainer),
       maxLines: 5,
       textAlign: widget.icon != null ? TextAlign.start : TextAlign.center,
     );
@@ -117,11 +125,13 @@ class _ButtonState extends State<Button> {
                   : getColor(context, "lightDarkAccentHeavy")
               : widget.color != null
                   ? widget.color
-                  : appStateSettings["materialYou"]
-                      ? dynamicPastel(
-                          context, Theme.of(context).colorScheme.primary,
-                          amount: 0.15)
-                      : Theme.of(context).colorScheme.secondaryContainer,
+                  : dark
+                      ? scheme.primary
+                      : appStateSettings["materialYou"]
+                          ? dynamicPastel(
+                              context, Theme.of(context).colorScheme.primary,
+                              amount: 0.15)
+                          : Theme.of(context).colorScheme.secondaryContainer,
           onHighlightChanged: (value) {
             if (canAnimate)
               setState(() {
@@ -138,7 +148,7 @@ class _ButtonState extends State<Button> {
           borderRadius:
               getPlatform() == PlatformOS.isIOS && widget.borderRadius == null
                   ? 10
-                  : widget.borderRadius ?? 20,
+                  : widget.borderRadius ?? 18,
           child: Padding(
             padding: EdgeInsetsDirectional.only(
               bottom: widget.expandToFillBottomExtraSafeArea
@@ -161,9 +171,11 @@ class _ButtonState extends State<Button> {
                           widget.icon,
                           size: 21,
                           color: widget.iconColor == null
-                              ? Theme.of(context)
-                                  .colorScheme
-                                  .onSecondaryContainer
+                              ? dark
+                                  ? onButton
+                                  : Theme.of(context)
+                                      .colorScheme
+                                      .onSecondaryContainer
                               : widget.iconColor,
                         ),
                       ),

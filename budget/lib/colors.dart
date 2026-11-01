@@ -84,16 +84,11 @@ AppColors getAppColors(
           colors: {
             "white": Colors.black,
             "black": Colors.white,
-            "textLight": appStateSettings["increaseTextContrast"]
-                ? Colors.white.withOpacity(0.65)
-                : appStateSettings["materialYou"]
-                    ? Colors.white.withOpacity(0.25)
-                    : Color(0xFF494949),
-            "lightDarkAccent": appStateSettings["materialYou"]
-                ? darkenPastel(accentColor, amount: 0.83)
-                : Color(0xFF161616),
-            "lightDarkAccentHeavyLight": lightDarkAccentHeavyLight,
-            "canvasContainer": const Color(0xFF242424),
+            "textLight": Colors.white.withOpacity(
+                appStateSettings["increaseTextContrast"] ? 0.8 : 0.65),
+            "lightDarkAccent": const Color(0xFF181818),
+            "lightDarkAccentHeavyLight": const Color(0xFF202020),
+            "canvasContainer": const Color(0xFF282828),
             "lightDarkAccentHeavy": const Color(0xFF444444),
             "shadowColor": const Color(0x69BDBDBD),
             "shadowColorLight": appStateSettings["materialYou"]
@@ -105,17 +100,8 @@ AppColors getAppColors(
             "expenseAmount": Color(0xFFDA7272),
             "warningOrange": Color(0xFFDA9C72),
             "starYellow": Colors.yellow,
-            "dividerColor": appStateSettings["materialYou"]
-                ? Color(0x13FFFFFF)
-                : Color(0x6F363636),
-            "standardContainerColor": getPlatform() == PlatformOS.isIOS
-                ? themeData.colorScheme.background
-                : appStateSettings["materialYou"]
-                    ? darkenPastel(
-                        themeData.colorScheme.secondaryContainer,
-                        amount: 0.6,
-                      )
-                    : lightDarkAccentHeavyLight,
+            "dividerColor": const Color(0xFF343434),
+            "standardContainerColor": const Color(0xFF202020),
           },
         );
 }
@@ -383,34 +369,50 @@ bool isGrayScale(Color color, {int threshold = 10}) {
 }
 
 ColorScheme getColorScheme(Brightness brightness) {
+  if (brightness == Brightness.dark) {
+    final accent =
+        getSettingConstants(appStateSettings)["accentColor"] as Color;
+    final onAccent = accent.computeLuminance() > 0.179
+        ? const Color(0xFF080808)
+        : Colors.white;
+    return ColorScheme.fromSeed(
+      seedColor: accent,
+      brightness: Brightness.dark,
+    ).copyWith(
+      primary: accent,
+      onPrimary: onAccent,
+      secondary: accent,
+      onSecondary: onAccent,
+      tertiary: accent,
+      onTertiary: onAccent,
+      primaryContainer: const Color(0xFF282828),
+      onPrimaryContainer: Colors.white,
+      secondaryContainer: const Color(0xFF282828),
+      onSecondaryContainer: Colors.white,
+      background: appStateSettings["forceFullDarkBackground"] == true
+          ? Colors.black
+          : const Color(0xFF080808),
+      surface: const Color(0xFF202020),
+      surfaceVariant: const Color(0xFF282828),
+      onSurfaceVariant: const Color(0xFFB3B3B3),
+      outlineVariant: const Color(0xFF343434),
+      surfaceTint: Colors.transparent,
+    );
+  }
   if (isGrayScale(
     getSettingConstants(appStateSettings)["accentColor"],
     threshold: 15,
   )) {
     return getGrayScaleColorScheme(brightness);
   }
-  if (brightness == Brightness.light) {
-    return ColorScheme.fromSeed(
-      seedColor: getSettingConstants(appStateSettings)["accentColor"],
-      brightness: Brightness.light,
-      background: appStateSettings["materialYou"]
-          ? lightenPastel(getSettingConstants(appStateSettings)["accentColor"],
-              amount: 0.91)
-          : Colors.white,
-    );
-  } else {
-    return ColorScheme.fromSeed(
-      seedColor: getSettingConstants(appStateSettings)["accentColor"],
-      brightness: Brightness.dark,
-      background: appStateSettings["forceFullDarkBackground"] == true
-          ? Colors.black
-          : appStateSettings["materialYou"]
-              ? darkenPastel(
-                  getSettingConstants(appStateSettings)["accentColor"],
-                  amount: 0.92)
-              : Colors.black,
-    );
-  }
+  return ColorScheme.fromSeed(
+    seedColor: getSettingConstants(appStateSettings)["accentColor"],
+    brightness: Brightness.light,
+    background: appStateSettings["materialYou"]
+        ? lightenPastel(getSettingConstants(appStateSettings)["accentColor"],
+            amount: 0.91)
+        : Colors.white,
+  );
 }
 
 ColorScheme getGrayScaleColorScheme(Brightness brightness) {
@@ -526,6 +528,7 @@ Color getBottomNavbarBackgroundColor({
   required Brightness brightness,
   required Color lightDarkAccent,
 }) {
+  if (brightness == Brightness.dark) return const Color(0xFF181818);
   if (getPlatform() == PlatformOS.isIOS) {
     return brightness == Brightness.light
         ? lightenPastel(colorScheme.secondaryContainer,

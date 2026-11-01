@@ -224,10 +224,22 @@ class BottomNavBarState extends State<BottomNavBar> {
             lightDarkAccent: getColor(context, "lightDarkAccent"),
           ),
           surfaceTintColor: Colors.transparent,
-          indicatorColor: appStateSettings["materialYou"]
-              ? dynamicPastel(context, Theme.of(context).colorScheme.primary,
-                  amount: 0.6)
-              : null,
+          indicatorColor: Theme.of(context).brightness == Brightness.dark
+              ? Theme.of(context).colorScheme.primary.withOpacity(0.14)
+              : appStateSettings["materialYou"]
+                  ? dynamicPastel(
+                      context, Theme.of(context).colorScheme.primary,
+                      amount: 0.6)
+                  : null,
+          indicatorShape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(14)),
+          ),
+          iconTheme:
+              MaterialStateProperty.resolveWith((states) => IconThemeData(
+                    color: states.contains(MaterialState.selected)
+                        ? Theme.of(context).colorScheme.primary
+                        : Theme.of(context).colorScheme.onSurfaceVariant,
+                  )),
           labelTextStyle: MaterialStateProperty.resolveWith((states) {
             if (states.contains(MaterialState.selected)) {
               return TextStyle(
