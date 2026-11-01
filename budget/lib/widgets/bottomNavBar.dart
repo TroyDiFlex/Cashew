@@ -1,3 +1,4 @@
+import 'package:budget/motion.dart';
 import 'dart:math';
 import 'package:budget/functions.dart';
 import 'package:budget/pages/editBudgetPage.dart';
@@ -248,7 +249,9 @@ class BottomNavBarState extends State<BottomNavBar> {
           labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
         ),
         child: NavigationBar(
-          animationDuration: Duration(milliseconds: 1000),
+          animationDuration: AppMotion.resolve(context, AppMotion.quick,
+              enabled: appStateSettings["batterySaver"] != true &&
+                  appStateSettings["appAnimations"] != 2),
           destinations: [
             CustomizableNavigationBarIcon(
               shortcutAppSettingKey: "customNavBarShortcut0",

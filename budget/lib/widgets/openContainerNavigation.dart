@@ -1,3 +1,4 @@
+import 'package:budget/motion.dart';
 import 'package:budget/functions.dart';
 import 'package:budget/struct/defaultPreferences.dart';
 import 'package:budget/struct/settings.dart';
@@ -29,7 +30,8 @@ class OpenContainerNavigation extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (appStateSettings["batterySaver"] == true ||
-        appStateSettings["appAnimations"] != AppAnimations.all.index) {
+        appStateSettings["appAnimations"] != AppAnimations.all.index ||
+        (MediaQuery.maybeOf(context)?.disableAnimations ?? false)) {
       Widget child = button(() async {
         if (onOpen != null) onOpen!();
         await pushRoute(context, openPage);
@@ -53,9 +55,7 @@ class OpenContainerNavigation extends StatelessWidget {
         return openPage;
       },
       tappable: false,
-      transitionDuration: getPlatform() == PlatformOS.isIOS
-          ? Duration(milliseconds: 475)
-          : Duration(milliseconds: 400),
+      transitionDuration: AppMotion.standard,
       closedElevation: closedElevation ?? 0,
       openColor: closedColor ?? Colors.transparent,
       closedColor: closedColor ?? Colors.transparent,

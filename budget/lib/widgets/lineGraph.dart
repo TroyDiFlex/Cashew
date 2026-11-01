@@ -1,3 +1,4 @@
+import 'package:budget/motion.dart';
 import 'package:budget/database/tables.dart';
 import 'package:budget/functions.dart';
 import 'package:budget/struct/currencyFunctions.dart';
@@ -45,18 +46,7 @@ class _LineChart extends StatefulWidget {
 }
 
 class _LineChartState extends State<_LineChart> with WidgetsBindingObserver {
-  bool loaded = false;
   double extraHorizontalPadding = 10;
-  @override
-  void initState() {
-    super.initState();
-    Future.delayed(Duration(milliseconds: 0), () {
-      setState(() {
-        loaded = true;
-      });
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -65,8 +55,10 @@ class _LineChartState extends State<_LineChart> with WidgetsBindingObserver {
       child: GestureDetector(
         child: LineChart(
           data,
-          duration: const Duration(milliseconds: 2000),
-          curve: Curves.fastLinearToSlowEaseIn,
+          duration: AppMotion.resolve(context, AppMotion.chart,
+              enabled: appStateSettings["batterySaver"] != true &&
+                  appStateSettings["appAnimations"] == 0),
+          curve: Curves.easeOutCubic,
           chartRendererKey: ValueKey(1),
         ),
       ),
@@ -79,24 +71,9 @@ class _LineChartState extends State<_LineChart> with WidgetsBindingObserver {
         borderData: borderData,
         lineBarsData: lineBarsData,
         minX: 0,
-        maxX: loaded
-            ? widget.maxPair.x
-            : widget.maxPair.x - widget.maxPair.x * 0.7,
-        minY: loaded
-            ?
-            // (widget.maxPair.y > 0 && widget.minPair.y > 0) ||
-            //         (widget.maxPair.y < 0 && widget.minPair.y < 0)
-            //     ? 0
-            //     : widget.minPair.y
-            widget.minPair.y == 0
-                ? -0.000001
-                : widget.minPair.y
-            : widget.minPair.y - (widget.minPair.y - widget.amountBefore) * 0.7,
-        maxY: loaded
-            ? widget.maxPair.y == 0
-                ? 0.000001
-                : widget.maxPair.y
-            : widget.maxPair.y + (widget.maxPair.y - widget.amountBefore) * 0.7,
+        maxX: widget.maxPair.x,
+        minY: widget.minPair.y == 0 ? -0.000001 : widget.minPair.y,
+        maxY: widget.maxPair.y == 0 ? 0.000001 : widget.maxPair.y,
         // axisTitleData: axisTitleData,
         titlesData: titlesData,
         extraLinesData: extraLinesData,
@@ -692,7 +669,8 @@ class LineChartWrapper extends StatelessWidget {
         // Left padding is omitted and added in the reserved size of the side titles
         margin: EdgeInsets.only(bottom: 12, top: 18, right: 7),
         height: MediaQuery.sizeOf(context).width > 700 ? 300 : 175,
-        child: _LineChart(
+        child: RepaintBoundary(
+            child: _LineChart(
           spots: convertPoints(filterPointsList(points)),
           maxPair: maxPair,
           minPair: minPair,
@@ -705,7 +683,7 @@ class LineChartWrapper extends StatelessWidget {
           colors: colors,
           extraLeftPaddingIfSmall: extraLeftPaddingIfSmall,
           amountBefore: amountBefore,
-        ),
+        )),
       ),
     );
   }

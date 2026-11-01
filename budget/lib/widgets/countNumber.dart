@@ -1,3 +1,4 @@
+import 'package:budget/motion.dart';
 import 'dart:math';
 
 import 'package:budget/database/tables.dart';
@@ -18,7 +19,7 @@ class CountUp extends StatefulWidget {
     this.textAlign = TextAlign.start,
     this.textColor,
     this.maxLines = null,
-    this.duration = const Duration(milliseconds: 3000),
+    this.duration = const Duration(milliseconds: 520),
     this.decimals = 2,
     this.curve = Curves.easeOutExpo,
     this.walletPkForCurrency,
@@ -44,7 +45,9 @@ class CountUp extends StatefulWidget {
 class _CountUpState extends State<CountUp> {
   @override
   Widget build(BuildContext context) {
-    if (appStateSettings["batterySaver"]) {
+    if (appStateSettings["batterySaver"] == true ||
+        appStateSettings["appAnimations"] != 0 ||
+        (MediaQuery.maybeOf(context)?.disableAnimations ?? false)) {
       return TextFont(
         text: widget.prefix +
             (widget.count).toStringAsFixed(widget.decimals) +
@@ -93,7 +96,7 @@ class CountNumber extends StatefulWidget {
     required this.count,
     required this.textBuilder,
     this.fontSize = 16,
-    this.duration = const Duration(milliseconds: 1000),
+    this.duration = AppMotion.number,
     this.curve = Curves.easeOutQuint,
     this.initialCount = 0,
     this.decimals,
@@ -120,7 +123,9 @@ class _CountNumberState extends State<CountNumber> {
   @override
   Widget build(BuildContext context) {
     if (appStateSettings["numberCountUpAnimation"] == false ||
-        appStateSettings["batterySaver"] == true) {
+        appStateSettings["batterySaver"] == true ||
+        appStateSettings["appAnimations"] != 0 ||
+        (MediaQuery.maybeOf(context)?.disableAnimations ?? false)) {
       previousAmount = widget.count;
       return widget.textBuilder(widget.count);
     }

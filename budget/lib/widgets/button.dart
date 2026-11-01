@@ -1,3 +1,4 @@
+import 'package:budget/motion.dart';
 import 'dart:async';
 import 'package:budget/functions.dart';
 import 'package:budget/pages/addTransactionPage.dart';
@@ -56,14 +57,16 @@ class Button extends StatefulWidget {
   _ButtonState createState() => _ButtonState();
 }
 
-class _ButtonState extends State<Button> with TickerProviderStateMixin {
+class _ButtonState extends State<Button> {
   bool isTapped = false;
   Timer? timer;
   void _shrink() {
+    timer?.cancel();
     setState(() {
       isTapped = true;
     });
-    timer = Timer(Duration(milliseconds: 200), () {
+    timer = Timer(AppMotion.press, () {
+      if (!mounted) return;
       setState(() {
         isTapped = false;
       });
@@ -78,6 +81,10 @@ class _ButtonState extends State<Button> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    final canAnimate =
+        appStateSettings["appAnimations"] == AppAnimations.all.index &&
+            appStateSettings["batterySaver"] != true &&
+            !(MediaQuery.maybeOf(context)?.disableAnimations ?? false);
     Widget text = TextFont(
       text: widget.label,
       fontSize: widget.fontSize,
@@ -96,9 +103,10 @@ class _ButtonState extends State<Button> with TickerProviderStateMixin {
               ? MediaQuery.viewPaddingOf(context).bottom
               : 0),
       child: AnimatedScale(
-        duration: Duration(milliseconds: 200),
+        duration:
+            AppMotion.resolve(context, AppMotion.press, enabled: canAnimate),
         curve: Curves.easeOutCubic,
-        scale: widget.changeScale ? (isTapped ? 0.95 : 1) : 1,
+        scale: widget.changeScale && canAnimate ? (isTapped ? 0.98 : 1) : 1,
         alignment: widget.expandToFillBottomExtraSafeArea
             ? Alignment.bottomCenter
             : Alignment.center,
@@ -115,14 +123,13 @@ class _ButtonState extends State<Button> with TickerProviderStateMixin {
                           amount: 0.15)
                       : Theme.of(context).colorScheme.secondaryContainer,
           onHighlightChanged: (value) {
-            if (appStateSettings["appAnimations"] == AppAnimations.all.index)
+            if (canAnimate)
               setState(() {
                 isTapped = value;
               });
           },
           onTap: () {
-            if (appStateSettings["appAnimations"] == AppAnimations.all.index)
-              _shrink();
+            if (canAnimate) _shrink();
             if (widget.disabled == false) widget.onTap();
             if (widget.disabled == true && widget.onDisabled != null)
               widget.onDisabled!();
@@ -298,7 +305,7 @@ class SelectedIconForIconButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AnimatedContainer(
-      duration: Duration(milliseconds: 500),
+      duration: AppMotion.resolve(context, AppMotion.quick),
       decoration: BoxDecoration(
         color: isSelected
             ? Theme.of(context).colorScheme.tertiary.withOpacity(0.1)

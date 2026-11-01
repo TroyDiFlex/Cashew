@@ -1,68 +1,73 @@
+import 'package:budget/struct/settings.dart';
+import 'package:budget/motion.dart';
 import 'package:flutter/material.dart';
 
 class AnimatedExpanded extends StatefulWidget {
+  const AnimatedExpanded({
+    this.expand = false,
+    required this.child,
+    this.duration = AppMotion.standard,
+    this.sizeCurve = Curves.easeOutCubic,
+    this.axis = Axis.vertical,
+    super.key,
+  });
+
   final Widget child;
   final bool expand;
   final Duration duration;
   final Curve sizeCurve;
   final Axis axis;
 
-  AnimatedExpanded({
-    this.expand = false,
-    required this.child,
-    this.duration = const Duration(milliseconds: 425),
-    this.sizeCurve = Curves.fastOutSlowIn,
-    this.axis = Axis.vertical,
-    super.key,
-  });
-
   @override
-  _AnimatedExpandedState createState() => _AnimatedExpandedState();
+  State<AnimatedExpanded> createState() => _AnimatedExpandedState();
 }
 
 class _AnimatedExpandedState extends State<AnimatedExpanded>
     with SingleTickerProviderStateMixin {
-  late AnimationController expandController;
+  late final AnimationController expandController;
   late Animation<double> sizeAnimation;
   late Animation<double> fadeAnimation;
 
   @override
   void initState() {
     super.initState();
-    prepareAnimations();
-  }
-
-  void prepareAnimations() {
     expandController = AnimationController(
       vsync: this,
       duration: widget.duration,
-      value: widget.expand ? 1.0 : 0.0,
+      value: widget.expand ? 1 : 0,
     );
-    sizeAnimation = CurvedAnimation(
-      parent: expandController,
-      curve: widget.sizeCurve,
-    );
-    fadeAnimation = CurvedAnimation(
-      parent: expandController,
-      curve: Curves.easeInOut,
-    );
-    if (widget.expand) {
-      expandController.value = 1.0;
+    _configureCurves();
+  }
+
+  void _configureCurves() {
+    sizeAnimation = expandController.drive(CurveTween(curve: widget.sizeCurve));
+    fadeAnimation = expandController.drive(CurveTween(curve: Curves.easeOut));
+  }
+
+  void _updateAnimation() {
+    expandController.duration = AppMotion.resolve(context, widget.duration,
+        enabled: appStateSettings["batterySaver"] != true &&
+            appStateSettings["appAnimations"] != 2);
+    if (expandController.duration == Duration.zero) {
+      expandController.value = widget.expand ? 1 : 0;
+    } else if (widget.expand) {
+      expandController.forward();
+    } else {
+      expandController.reverse();
     }
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _updateAnimation();
   }
 
   @override
   void didUpdateWidget(covariant AnimatedExpanded oldWidget) {
     super.didUpdateWidget(oldWidget);
-    _runExpandCheck();
-  }
-
-  void _runExpandCheck() {
-    if (widget.expand) {
-      expandController.forward();
-    } else {
-      expandController.reverse();
-    }
+    if (oldWidget.sizeCurve != widget.sizeCurve) _configureCurves();
+    _updateAnimation();
   }
 
   @override
@@ -77,7 +82,7 @@ class _AnimatedExpandedState extends State<AnimatedExpanded>
       opacity: fadeAnimation,
       child: SizeTransition(
         axis: widget.axis,
-        axisAlignment: 1.0,
+        axisAlignment: 1,
         sizeFactor: sizeAnimation,
         child: widget.child,
       ),
@@ -85,19 +90,18 @@ class _AnimatedExpandedState extends State<AnimatedExpanded>
   }
 }
 
-// Animated Switcher may be needed, if old data gets wiped immediately
-// we want to keep the old UI when a transition occurs to make it smoother
 class AnimatedSizeSwitcher extends StatelessWidget {
   const AnimatedSizeSwitcher({
     required this.child,
-    this.sizeCurve = Curves.easeInOutCubicEmphasized,
-    this.sizeDuration = const Duration(milliseconds: 800),
-    this.switcherDuration = const Duration(milliseconds: 250),
+    this.sizeCurve = Curves.easeOutCubic,
+    this.sizeDuration = AppMotion.chart,
+    this.switcherDuration = AppMotion.quick,
     this.sizeAlignment = AlignmentDirectional.center,
     this.clipBehavior = Clip.hardEdge,
     this.enabled = true,
     super.key,
   });
+
   final Widget child;
   final Curve sizeCurve;
   final Duration sizeDuration;
@@ -108,10 +112,14 @@ class AnimatedSizeSwitcher extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (enabled == false) return child;
+    final duration = AppMotion.resolve(context, sizeDuration,
+        enabled: enabled &&
+            appStateSettings["batterySaver"] != true &&
+            appStateSettings["appAnimations"] != 2);
+    if (duration == Duration.zero) return child;
     return AnimatedSize(
       clipBehavior: clipBehavior,
-      duration: sizeDuration,
+      duration: duration,
       curve: sizeCurve,
       alignment: sizeAlignment,
       child: AnimatedSwitcher(

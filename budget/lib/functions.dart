@@ -1,3 +1,4 @@
+import 'package:budget/motion.dart';
 import 'dart:math';
 import 'dart:ui' as ui;
 import 'package:budget/database/tables.dart';
@@ -1038,8 +1039,13 @@ Future<dynamic> pushRoute(BuildContext? context, Widget page,
     contextToPush,
     PageRouteBuilder(
       opaque: true,
-      transitionDuration: Duration(milliseconds: 300),
-      reverseTransitionDuration: Duration(milliseconds: 125),
+      transitionDuration: AppMotion.resolve(contextToPush, AppMotion.standard,
+          enabled: appStateSettings["batterySaver"] != true &&
+              appStateSettings["appAnimations"] != 2),
+      reverseTransitionDuration: AppMotion.resolve(
+          contextToPush, AppMotion.quick,
+          enabled: appStateSettings["batterySaver"] != true &&
+              appStateSettings["appAnimations"] != 2),
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
         final tween = Tween(begin: Offset(0, 0.05), end: Offset.zero)
             .chain(CurveTween(curve: Curves.easeOut));
