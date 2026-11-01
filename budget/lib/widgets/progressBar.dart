@@ -9,7 +9,7 @@ class ProgressBar extends StatelessWidget {
   const ProgressBar({
     required this.currentPercent,
     required this.color,
-    this.height = 6,
+    this.height = 10,
     Key? key,
   }) : super(key: key);
   @override
@@ -26,7 +26,7 @@ class ProgressBar extends StatelessWidget {
               decoration: BoxDecoration(
                 color: getColor(context, "lightDarkAccentHeavy"),
                 shape: BoxShape.rectangle,
-                borderRadius: BorderRadiusDirectional.circular(4),
+                borderRadius: BorderRadiusDirectional.circular(100),
               ),
             ),
             AnimatedContainer(
@@ -36,7 +36,7 @@ class ProgressBar extends StatelessWidget {
               decoration: BoxDecoration(
                 color: color,
                 shape: BoxShape.rectangle,
-                borderRadius: BorderRadiusDirectional.circular(4),
+                borderRadius: BorderRadiusDirectional.circular(100),
               ),
             ),
           ],

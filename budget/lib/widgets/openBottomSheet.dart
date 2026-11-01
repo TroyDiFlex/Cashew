@@ -1,4 +1,3 @@
-import 'package:budget/visuals.dart';
 import 'package:budget/functions.dart';
 import 'package:budget/struct/settings.dart';
 import 'package:budget/widgets/navigationSidebar.dart';
@@ -59,8 +58,6 @@ double getHorizontalPaddingConstrained(BuildContext context,
 }
 
 Color getPopupBackgroundColor(BuildContext context) {
-  if (Theme.of(context).brightness == Brightness.dark)
-    return CharcoalPalette.panel;
   return appStateSettings["materialYou"]
       ? dynamicPastel(context, Theme.of(context).colorScheme.secondaryContainer,
           amountDark: 0.3, amountLight: 0.6)

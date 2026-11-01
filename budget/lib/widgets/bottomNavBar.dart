@@ -1,4 +1,3 @@
-import 'package:budget/visuals.dart';
 import 'package:budget/motion.dart';
 import 'dart:math';
 import 'package:budget/functions.dart';
@@ -123,8 +122,7 @@ class BottomNavBarState extends State<BottomNavBar> {
               brightness: Theme.of(context).brightness,
               lightDarkAccent: getColor(context, "lightDarkAccent"),
             ),
-            border: Border(
-                top: BorderSide(color: getColor(context, "dividerColor"))),
+            boxShadow: boxShadowSharp(context),
           ),
           padding: EdgeInsetsDirectional.only(
               top: 2,
@@ -216,8 +214,7 @@ class BottomNavBarState extends State<BottomNavBar> {
     // Android navbar
     return Container(
       decoration: BoxDecoration(
-        border:
-            Border(top: BorderSide(color: getColor(context, "dividerColor"))),
+        boxShadow: boxShadowSharp(context),
       ),
       child: NavigationBarTheme(
         data: NavigationBarThemeData(
@@ -227,26 +224,17 @@ class BottomNavBarState extends State<BottomNavBar> {
             lightDarkAccent: getColor(context, "lightDarkAccent"),
           ),
           surfaceTintColor: Colors.transparent,
-          indicatorColor: Theme.of(context).brightness == Brightness.dark
-              ? Theme.of(context).colorScheme.primary.withOpacity(0.12)
-              : Theme.of(context).colorScheme.secondaryContainer,
-          indicatorShape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(CharcoalPalette.controlRadius),
-          ),
-          iconTheme:
-              MaterialStateProperty.resolveWith((states) => IconThemeData(
-                    color: states.contains(MaterialState.selected)
-                        ? Theme.of(context).colorScheme.primary
-                        : Theme.of(context).colorScheme.onSurfaceVariant,
-                  )),
+          indicatorColor: appStateSettings["materialYou"]
+              ? dynamicPastel(context, Theme.of(context).colorScheme.primary,
+                  amount: 0.6)
+              : null,
           labelTextStyle: MaterialStateProperty.resolveWith((states) {
             if (states.contains(MaterialState.selected)) {
               return TextStyle(
                 fontFamily: appStateSettings["font"],
                 fontFamilyFallback: ['Inter'],
                 fontSize: 13,
-                fontWeight: FontWeight.w600,
-                color: Theme.of(context).colorScheme.primary,
+                fontWeight: FontWeight.bold,
                 overflow: TextOverflow.clip,
               );
             } else {

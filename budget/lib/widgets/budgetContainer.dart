@@ -1,4 +1,3 @@
-import 'package:budget/visuals.dart';
 import 'package:budget/database/tables.dart';
 import 'package:budget/pages/sharedBudgetSettings.dart';
 import 'package:budget/pages/transactionFilters.dart';
@@ -342,39 +341,37 @@ class BudgetContainer extends StatelessWidget {
           defaultColor: Theme.of(context).colorScheme.primary),
       brightness: determineBrightnessTheme(context),
     );
-    Color backgroundColor = Theme.of(context).brightness == Brightness.dark
-        ? CharcoalPalette.panel
-        : appStateSettings["materialYou"]
-            ? budget.colour == null
-                ? appStateSettings["accentSystemColor"] == true &&
-                        appStateSettings["materialYou"] &&
-                        appStateSettings["batterySaver"] == false
-                    ? dynamicPastel(
-                        context,
-                        Theme.of(context).colorScheme.primary,
-                        amountDark: 0.85,
-                        amountLight: 0.96,
-                      )
-                    : dynamicPastel(
-                        context, HexColor(appStateSettings["accentColor"]),
-                        amountDark: 0.8,
-                        amountLight:
-                            appStateSettings["batterySaver"] ? 0.8 : 0.92)
-                : dynamicPastel(
+    Color backgroundColor = appStateSettings["materialYou"]
+        ? budget.colour == null
+            ? appStateSettings["accentSystemColor"] == true &&
+                    appStateSettings["materialYou"] &&
+                    appStateSettings["batterySaver"] == false
+                ? dynamicPastel(
                     context,
-                    budgetColorScheme.secondaryContainer,
-                    amountDark: 0.6,
-                    amountLight: 0.75,
+                    Theme.of(context).colorScheme.primary,
+                    amountDark: 0.85,
+                    amountLight: 0.96,
                   )
-            : getColor(
+                : dynamicPastel(
+                    context, HexColor(appStateSettings["accentColor"]),
+                    amountDark: 0.8,
+                    amountLight: appStateSettings["batterySaver"] ? 0.8 : 0.92)
+            : dynamicPastel(
                 context,
-                "lightDarkAccentHeavyLight",
-              );
+                budgetColorScheme.secondaryContainer,
+                amountDark: 0.6,
+                amountLight: 0.75,
+              )
+        : getColor(
+            context,
+            "lightDarkAccentHeavyLight",
+          );
     return Container(
-      padding: const EdgeInsets.all(1),
-      decoration: CharcoalPalette.panelDecoration(context),
+      decoration: BoxDecoration(
+        boxShadow: boxShadowCheck(boxShadowGeneral(context)),
+      ),
       child: OpenContainerNavigation(
-        borderRadius: CharcoalPalette.radius,
+        borderRadius: 20,
         closedColor: backgroundColor,
         button: (openContainer) {
           return Tappable(
@@ -392,7 +389,7 @@ class BudgetContainer extends StatelessWidget {
                     );
                   }
                 : null,
-            borderRadius: CharcoalPalette.radius,
+            borderRadius: 20,
             child: widget,
             color: backgroundColor,
           );

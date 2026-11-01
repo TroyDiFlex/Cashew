@@ -1,4 +1,3 @@
-import 'package:budget/visuals.dart';
 import 'package:budget/struct/settings.dart';
 import 'package:budget/widgets/framework/popupFramework.dart';
 import 'package:budget/widgets/navigationFramework.dart';
@@ -38,7 +37,7 @@ class AddFAB extends StatelessWidget {
       openPage: openPage,
       onTap: onTap,
       fabSize: getIsFullScreen(context) == false ? 60 : 70,
-      borderRadius: CharcoalPalette.radius,
+      borderRadius: getIsFullScreen(context) == false ? 18 : 22,
       onLongPress: () {
         openBottomSheet(
           context,
@@ -62,7 +61,7 @@ class FAB extends StatelessWidget {
     this.colorIcon,
     this.iconData,
     this.fabSize = 60,
-    this.borderRadius = CharcoalPalette.radius,
+    this.borderRadius = 18,
     this.label,
     this.labelSize = 18,
     this.isOutlined = false,
@@ -109,75 +108,59 @@ class FAB extends StatelessWidget {
     //         : blend(Theme.of(context).colorScheme.onSecondary,
     //             Theme.of(context).colorScheme.onPrimary,
     //             amount: 0.35);
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(borderRadius),
-        boxShadow: appStateSettings["disableShadows"] == true ||
-                appStateSettings["batterySaver"] == true ||
-                isOutlined
-            ? null
-            : [
-                BoxShadow(
-                    color: (containerColor ?? Colors.transparent)
-                        .withOpacity(0.16),
-                    blurRadius: 14,
-                    offset: const Offset(0, 3))
-              ],
-      ),
-      child: OpenContainerNavigation(
-        closedElevation: 0,
-        borderRadius: borderRadius,
-        closedColor: containerColor,
-        button: (openContainer) {
-          return Tooltip(
-            message: tooltip ?? "",
-            child: Tappable(
-              color: containerColor,
-              onTap: () {
-                if (onTap != null)
-                  onTap!();
-                else
-                  openContainer();
-              },
-              onLongPress: onLongPress,
-              child: OutlinedContainer(
-                enabled: isOutlined,
-                borderRadius: borderRadius,
-                child: Builder(builder: (context) {
-                  Widget fabIcon = SizedBox(
-                    height: fabSize,
-                    width: fabSize,
-                    child: Center(
-                      child: Icon(
-                        iconData,
-                        color: iconColor,
-                      ),
+    return OpenContainerNavigation(
+      closedElevation: 10,
+      borderRadius: borderRadius,
+      closedColor: containerColor,
+      button: (openContainer) {
+        return Tooltip(
+          message: tooltip ?? "",
+          child: Tappable(
+            color: containerColor,
+            onTap: () {
+              if (onTap != null)
+                onTap!();
+              else
+                openContainer();
+            },
+            onLongPress: onLongPress,
+            child: OutlinedContainer(
+              enabled: isOutlined,
+              borderRadius: borderRadius,
+              child: Builder(builder: (context) {
+                Widget fabIcon = SizedBox(
+                  height: fabSize,
+                  width: fabSize,
+                  child: Center(
+                    child: Icon(
+                      iconData,
+                      color: iconColor,
                     ),
-                  );
-                  if (label != null)
-                    return Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        fabIcon,
-                        Padding(
-                          padding: const EdgeInsetsDirectional.only(
-                              top: 5, bottom: 5, end: 20),
-                          child: TextFont(
-                            text: label ?? "",
-                            fontSize: labelSize,
-                            textColor: iconColor,
-                          ),
+                  ),
+                );
+                if (label != null)
+                  return Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      fabIcon,
+                      Padding(
+                        padding: const EdgeInsetsDirectional.only(
+                            top: 5, bottom: 5, end: 20),
+                        child: TextFont(
+                          text: label ?? "",
+                          fontSize: labelSize,
+                          textColor: iconColor,
                         ),
-                      ],
-                    );
-                  return fabIcon;
-                }),
-              ),
+                      ),
+                    ],
+                  );
+                return fabIcon;
+              }),
             ),
-          );
-        },
-        openPage: openPage ?? Container(),
-      ),
+          ),
+        );
+      },
+      openPage: openPage ?? Container(),
     );
   }
 }

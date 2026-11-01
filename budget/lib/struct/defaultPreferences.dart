@@ -1,4 +1,3 @@
-import 'package:budget/visuals.dart';
 import 'package:budget/colors.dart';
 import 'package:budget/database/tables.dart';
 import 'package:budget/functions.dart';
@@ -22,7 +21,7 @@ Future<Map<String, dynamic>> getDefaultPreferences() async {
     "syncEveryChange": kIsWeb,
     "devicesHaveBeenSynced": 1,
     "numBackups": 1,
-    "theme": "dark", //system, light, dark
+    "theme": "system", //system, light, dark
     "use24HourFormat": "system", //system, 12-hour, 24-hour
     "numberCountUpAnimation": true,
     "appAnimations": AppAnimations.all.index,
@@ -30,8 +29,8 @@ Future<Map<String, dynamic>> getDefaultPreferences() async {
     "showExtraInfoText": true,
     "selectedWalletPk": "0",
     "selectedSubscriptionType": 0,
-    "accentColor": toHexString(CharcoalPalette.accent),
-    "accentSystemColor": false,
+    "accentColor": toHexString(Color(0xFF1B447A)),
+    "accentSystemColor": await systemColorByDefault(),
     "widgetOpacity": 1,
     "widgetTheme": "system", //system, light, dark
     "nonCompactTransactions":
@@ -172,7 +171,7 @@ Future<Map<String, dynamic>> getDefaultPreferences() async {
     "allSpendingSummaryAllWallets": true,
     "showPastSpendingTrajectory": false,
     "lastSynced": null,
-    "font": "Inter",
+    "font": "Avenir",
     "forceSmallHeader": false,
     "animationSpeed": 1.0,
     "logging": false,
